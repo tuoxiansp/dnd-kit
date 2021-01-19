@@ -47,7 +47,6 @@ export const DragOverlay = React.memo(
   }: Props) => {
     const {
       active,
-      activeNodeRect,
       activeNodeClientRect,
       containerNodeRect,
       draggableNodes,
@@ -70,7 +69,7 @@ export const DragOverlay = React.memo(
     });
     const derivedTransform = useDerivedTransform(
       modifiedTransform,
-      activeNodeRect,
+      activeNodeClientRect,
       overlayNode.nodeRef.current
     );
     const isDragging = active !== null;
@@ -82,13 +81,14 @@ export const DragOverlay = React.memo(
           scaleX: 1,
           scaleY: 1,
         };
-    const style: React.CSSProperties | undefined = activeNodeRect
+    const style: React.CSSProperties | undefined = activeNodeClientRect
       ? {
           position: 'fixed',
-          width: activeNodeRect.width,
-          height: activeNodeRect.height,
-          top: activeNodeRect.top,
-          left: activeNodeRect.left,
+          pointerEvents: 'none',
+          width: activeNodeClientRect.width,
+          height: activeNodeClientRect.height,
+          top: activeNodeClientRect.top,
+          left: activeNodeClientRect.left,
           zIndex,
           transform: CSS.Transform.toString(finalTransform),
           touchAction: 'none',
@@ -96,7 +96,7 @@ export const DragOverlay = React.memo(
             adjustScale && activatorEvent
               ? getRelativeTransformOrigin(
                   activatorEvent as MouseEvent | KeyboardEvent | TouchEvent,
-                  activeNodeRect
+                  activeNodeClientRect
                 )
               : undefined,
           transition: derivedTransform

@@ -3,7 +3,6 @@ import {CSS, Transform, useIsomorphicLayoutEffect} from '@dnd-kit/utilities';
 
 import {UniqueIdentifier} from '../../../types';
 import {DraggableNodes} from '../../../store';
-import {getViewRect} from '../../../utilities';
 
 export interface DropAnimation {
   duration: number;
@@ -60,7 +59,7 @@ export function useDropAnimation({
 
         if (fromNode) {
           const from = fromNode.getBoundingClientRect();
-          const to = getViewRect(finalNode);
+          const to = finalNode.getBoundingClientRect();
           const delta = {
             x: from.left - to.left,
             y: from.top - to.top,
