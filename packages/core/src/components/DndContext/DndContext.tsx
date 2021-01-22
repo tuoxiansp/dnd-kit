@@ -9,7 +9,6 @@ import React, {
   useState,
 } from 'react';
 import {
-  add,
   Transform,
   useIsomorphicLayoutEffect,
   useNodeRef,
@@ -179,13 +178,13 @@ export const DndContext = memo(function DndContext({
     active: UniqueIdentifier | null;
     droppableRects: LayoutRectMap;
     overId: UniqueIdentifier | null;
-    scrollAdjustedTransalte: Coordinates;
+    modifiedTranslate: Coordinates;
     translatedRect: ViewRect | null;
   }>({
     active,
     droppableRects,
     overId: null,
-    scrollAdjustedTransalte: defaultCoordinates,
+    modifiedTranslate: defaultCoordinates,
     translatedRect: null,
   });
   const overNode = getDroppableNode(
@@ -226,8 +225,6 @@ export const DndContext = memo(function DndContext({
   });
 
   const scrolllAdjustment = useScrollOffsets(scrollableAncestors);
-
-  const scrollAdjustedTransalte = add(modifiedTranslate, scrolllAdjustment);
 
   const translatedRect = activeNodeRect
     ? getAdjustedRect(activeNodeRect, modifiedTranslate)
@@ -324,7 +321,7 @@ export const DndContext = memo(function DndContext({
 
       function createHandler(type: Action.DragEnd | Action.DragCancel) {
         return function handler() {
-          const {overId, scrollAdjustedTransalte} = tracked.current;
+          const {overId, modifiedTranslate} = tracked.current;
           const props = latestProps.current;
           const activeId = activeRef.current;
 
@@ -344,7 +341,7 @@ export const DndContext = memo(function DndContext({
               active: {
                 id: activeId,
               },
-              delta: scrollAdjustedTransalte,
+              delta: modifiedTranslate,
               over: overId
                 ? {
                     id: overId,
@@ -443,8 +440,8 @@ export const DndContext = memo(function DndContext({
       draggingRect: translatedRect,
       droppableRects,
       delta: {
-        x: scrollAdjustedTransalte.x,
-        y: scrollAdjustedTransalte.y,
+        x: modifiedTranslate.x,
+        y: modifiedTranslate.y,
       },
       over:
         overId && overNodeRect
@@ -454,7 +451,7 @@ export const DndContext = memo(function DndContext({
             }
           : null,
     });
-  }, [scrollAdjustedTransalte.x, scrollAdjustedTransalte.y]);
+  }, [modifiedTranslate.x, modifiedTranslate.y]);
 
   useEffect(() => {
     if (!activeRef.current) {
@@ -492,9 +489,9 @@ export const DndContext = memo(function DndContext({
       droppableRects,
       overId,
       translatedRect,
-      scrollAdjustedTransalte,
+      modifiedTranslate,
     };
-  }, [active, droppableRects, overId, translatedRect, scrollAdjustedTransalte]);
+  }, [active, droppableRects, overId, translatedRect, modifiedTranslate]);
 
   useIsomorphicLayoutEffect(() => {
     sensorContext.current = {
